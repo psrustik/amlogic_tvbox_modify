@@ -157,53 +157,6 @@ index eca6c6c..ace1681 100644
  		};
  		map_2: map_2{
  			mapname = "amlogic-remote-3";
-diff --git a/arch/arm64/boot/dts/amlogic/mesongxm.dtsi b/arch/arm64/boot/dts/amlogic/mesongxm.dtsi
-index 2fbbcf6..87f63c6 100644
---- a/arch/arm64/boot/dts/amlogic/mesongxm.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/mesongxm.dtsi
-@@ -831,7 +831,33 @@
- 		map_1: map_1{
- 			mapname = "amlogic-remote-2";
- 			customcode = <0xfe01>;
--			size  = <53>;
-+			size  = <31>;
-+			keymap = <REMOTE_KEY(0x4e, KEY_1)
-+				REMOTE_KEY(0x0d, KEY_2)
-+				REMOTE_KEY(0x0c, KEY_3)
-+				REMOTE_KEY(0x4a, KEY_4)
-+				REMOTE_KEY(0x09, KEY_5)
-+				REMOTE_KEY(0x08, KEY_6)
-+				REMOTE_KEY(0x46, KEY_7)
-+				REMOTE_KEY(0x05, KEY_8)
-+				REMOTE_KEY(0x04, KEY_9)
-+				REMOTE_KEY(0x01, KEY_0)
-+				REMOTE_KEY(0x4c, KEY_MENU)
-+				REMOTE_KEY(0x11, KEY_HOME)
-+				REMOTE_KEY(0x50, KEY_RIGHT)
-+				REMOTE_KEY(0x51, KEY_LEFT)
-+				REMOTE_KEY(0x16, KEY_UP)
-+				REMOTE_KEY(0x1a, KEY_DOWN)
-+				REMOTE_KEY(0x13, KEY_ENTER)
-+				REMOTE_KEY(0x41, KEY_MUTE)
-+				REMOTE_KEY(0x43, KEY_BACK)
-+				REMOTE_KEY(0x40, KEY_POWER)
-+				REMOTE_KEY(0x59, KEY_PREVIOUSSONG)
-+				REMOTE_KEY(0x58, KEY_NEXTSONG)
-+				REMOTE_KEY(0x55, KEY_REWIND)
-+				REMOTE_KEY(0x54, KEY_FASTFORWARD)
-+				REMOTE_KEY(0x5a, KEY_PLAYPAUSE)>;
-+/*
- 			keymap = <REMOTE_KEY(0x01, KEY_1)
- 				REMOTE_KEY(0x02, KEY_2)
- 				REMOTE_KEY(0x03, KEY_3)
-@@ -885,6 +911,7 @@
- 				REMOTE_KEY(0x0b, KEY_QUESTION)
- 				REMOTE_KEY(0x00, KEY_CHAT)
- 				REMOTE_KEY(0x13, KEY_SEARCH)>;
-+*/
- 		};
- 		map_2: map_2{
- 			mapname = "amlogic-remote-3";
 diff --git a/drivers/amlogic/input/remote/Makefile b/drivers/amlogic/input/remote/Makefile
 index 460a29b..7bfe7d5 100644
 --- a/drivers/amlogic/input/remote/Makefile
