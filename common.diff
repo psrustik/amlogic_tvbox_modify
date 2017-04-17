@@ -1,0 +1,349 @@
+diff --git a/Makefile b/Makefile
+index 4ed49ea..dbfc0d8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -384,7 +384,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+ 		   -Wno-format-security \
+ 		   -fno-delete-null-pointer-checks \
+ 		   -Werror
+-KBUILD_CFLAGS   += -Wno-error=cpp
++KBUILD_CFLAGS   += -Wno-error=cpp -w
+ KBUILD_AFLAGS_KERNEL :=
+ KBUILD_CFLAGS_KERNEL :=
+ KBUILD_AFLAGS   := -D__ASSEMBLY__
+diff --git a/arch/arm64/boot/dts/amlogic/gxl_p212_1g.dts b/arch/arm64/boot/dts/amlogic/gxl_p212_1g.dts
+index a5c9179..cf37f64 100644
+--- a/arch/arm64/boot/dts/amlogic/gxl_p212_1g.dts
++++ b/arch/arm64/boot/dts/amlogic/gxl_p212_1g.dts
+@@ -621,7 +621,7 @@
+ 		system:system
+ 		{
+ 			pname = "system";
+-			size = <0x0 0x80000000>;
++			size = <0x0 0x60000000>;
+ 			mask = <1>;
+ 		};
+ 		cache:cache
+@@ -1085,7 +1085,7 @@
+ 		scan_period = <20>;
+ 		key_num = <1>;
+ 		key_name = "power";
+-		key_code = <116>;
++		key_code = <64>;
+ 		key_pin = <&gpio_ao  GPIOAO_2  GPIO_ACTIVE_HIGH>;  /*"GPIOAO_2";*/
+ 		irq_keyup = <6>;
+ 		irq_keydown = <7>;
+diff --git a/arch/arm64/boot/dts/amlogic/gxl_p212_2g.dts b/arch/arm64/boot/dts/amlogic/gxl_p212_2g.dts
+index 7c29f9e..3da3bb2 100644
+--- a/arch/arm64/boot/dts/amlogic/gxl_p212_2g.dts
++++ b/arch/arm64/boot/dts/amlogic/gxl_p212_2g.dts
+@@ -622,7 +622,7 @@
+ 		system:system
+ 		{
+ 			pname = "system";
+-			size = <0x0 0x80000000>;
++			size = <0x0 0x60000000>;
+ 			mask = <1>;
+ 		};
+ 		cache:cache
+@@ -1086,7 +1086,7 @@
+ 		scan_period = <20>;
+ 		key_num = <1>;
+ 		key_name = "power";
+-		key_code = <116>;
++		key_code = <64>;
+ 		key_pin = <&gpio_ao  GPIOAO_2  GPIO_ACTIVE_HIGH>;  /*"GPIOAO_2";*/
+ 		irq_keyup = <6>;
+ 		irq_keydown = <7>;
+diff --git a/arch/arm64/boot/dts/amlogic/mesongxl.dtsi b/arch/arm64/boot/dts/amlogic/mesongxl.dtsi
+index eca6c6c..ace1681 100644
+--- a/arch/arm64/boot/dts/amlogic/mesongxl.dtsi
++++ b/arch/arm64/boot/dts/amlogic/mesongxl.dtsi
+@@ -683,6 +683,7 @@
+ 		status = "ok";
+ 		protocol = <REMOTE_TYPE_NEC>;
+ 		interrupts = <0 196 1>;
++		remote_ao_offset = <0x580>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&remote_pins>;
+ 		map = <&custom_maps>;
+@@ -753,60 +754,37 @@
+ 		map_1: map_1{
+ 			mapname = "amlogic-remote-2";
+ 			customcode = <0xfe01>;
+-			size  = <53>;
+-			keymap = <REMOTE_KEY(0x01, KEY_1)
+-				REMOTE_KEY(0x02, KEY_2)
+-				REMOTE_KEY(0x03, KEY_3)
+-				REMOTE_KEY(0x04, KEY_4)
+-				REMOTE_KEY(0x05, KEY_5)
+-				REMOTE_KEY(0x06, KEY_6)
+-				REMOTE_KEY(0x07, KEY_7)
+-				REMOTE_KEY(0x08, KEY_8)
+-				REMOTE_KEY(0x09, KEY_9)
+-				REMOTE_KEY(0x0a, KEY_0)
+-				REMOTE_KEY(0x1F, KEY_FN_F1)
+-				REMOTE_KEY(0x15, KEY_MENU)
+-				REMOTE_KEY(0x16, KEY_TAB)
+-				REMOTE_KEY(0x0c, KEY_CHANNELUP)
+-				REMOTE_KEY(0x0d, KEY_CHANNELDOWN)
+-				REMOTE_KEY(0x0e, KEY_VOLUMEUP)
+-				REMOTE_KEY(0x0f, KEY_VOLUMEDOWN)
++			size  = <31>;
++			keymap = <REMOTE_KEY(0x4e, KEY_1)
++				REMOTE_KEY(0x0d, KEY_2)
++				REMOTE_KEY(0x0c, KEY_3)
++				REMOTE_KEY(0x4a, KEY_4)
++				REMOTE_KEY(0x09, KEY_5)
++				REMOTE_KEY(0x08, KEY_6)
++				REMOTE_KEY(0x46, KEY_7)
++				REMOTE_KEY(0x05, KEY_8)
++				REMOTE_KEY(0x04, KEY_9)
++				REMOTE_KEY(0x01, KEY_0)
++				REMOTE_KEY(0x18, KEY_VOLUMEUP)
++				REMOTE_KEY(0x10, KEY_VOLUMEDOWN)
+ 				REMOTE_KEY(0x11, KEY_HOME)
+-				REMOTE_KEY(0x1c, KEY_RIGHT)
+-				REMOTE_KEY(0x1b, KEY_LEFT)
+-				REMOTE_KEY(0x19, KEY_UP)
++				REMOTE_KEY(0x50, KEY_RIGHT)
++				REMOTE_KEY(0x51, KEY_LEFT)
++				REMOTE_KEY(0x16, KEY_UP)
+ 				REMOTE_KEY(0x1a, KEY_DOWN)
+-				REMOTE_KEY(0x1d, KEY_ENTER)
+-				REMOTE_KEY(0x17, KEY_MUTE)
+-				REMOTE_KEY(0x49, KEY_FINANCE)
+-				REMOTE_KEY(0x43, KEY_BACK)
+-				REMOTE_KEY(0x12, KEY_FN_F4)
+-				REMOTE_KEY(0x14, KEY_FN_F5)
+-				REMOTE_KEY(0x18, KEY_FN_F6)
+-				REMOTE_KEY(0x59, KEY_INFO)
+-				REMOTE_KEY(0x5a, KEY_STOPCD)
+-				REMOTE_KEY(0x10, KEY_POWER)
+-				REMOTE_KEY(0x42, KEY_PREVIOUSSONG)
+-				REMOTE_KEY(0x44, KEY_NEXTSONG)
+-				REMOTE_KEY(0x1e, KEY_REWIND)
+-				REMOTE_KEY(0x4b, KEY_FASTFORWARD)
+-				REMOTE_KEY(0x58, KEY_PLAYPAUSE)
+-				REMOTE_KEY(0x46, KEY_PROPS)
+-				REMOTE_KEY(0x40, KEY_UNDO)
+-				REMOTE_KEY(0x38, KEY_SCROLLLOCK)
+-				REMOTE_KEY(0x57, KEY_FN)
+-				REMOTE_KEY(0x5b, KEY_FN_ESC)
+-				REMOTE_KEY(0x54, KEY_RED)
+-				REMOTE_KEY(0x4c, KEY_GREEN)
+-				REMOTE_KEY(0x4e, KEY_YELLOW)
+-				REMOTE_KEY(0x55, KEY_BLUE)
+-				REMOTE_KEY(0x53, KEY_BLUETOOTH)
+-				REMOTE_KEY(0x52, KEY_WLAN)
+-				REMOTE_KEY(0x39, KEY_CAMERA)
+-				REMOTE_KEY(0x41, KEY_SOUND)
+-				REMOTE_KEY(0x0b, KEY_QUESTION)
+-				REMOTE_KEY(0x00, KEY_CHAT)
+-				REMOTE_KEY(0x13, KEY_SEARCH)>;
++				REMOTE_KEY(0x13, KEY_ENTER)
++				REMOTE_KEY(0x41, KEY_MUTE)
++				REMOTE_KEY(0x19, KEY_BACK)
++				REMOTE_KEY(0x52, KEY_STOPCD)
++				REMOTE_KEY(0x40, KEY_POWER)
++				REMOTE_KEY(0x55, KEY_REWIND)
++				REMOTE_KEY(0x54, KEY_FASTFORWARD)
++				REMOTE_KEY(0x5a, KEY_PLAYPAUSE)
++				REMOTE_KEY(0x42, KEY_DELETE)
++				REMOTE_KEY(0x4c, KEY_FN_F1)
++				REMOTE_KEY(0x0f, KEY_FN_F2)
++				REMOTE_KEY(0x43, KEY_FN_F3)
++				REMOTE_KEY(0x44, KEY_FN_F4)>;
+ 		};
+ 		map_2: map_2{
+ 			mapname = "amlogic-remote-3";
+diff --git a/arch/arm64/boot/dts/amlogic/mesongxm.dtsi b/arch/arm64/boot/dts/amlogic/mesongxm.dtsi
+index 2fbbcf6..87f63c6 100644
+--- a/arch/arm64/boot/dts/amlogic/mesongxm.dtsi
++++ b/arch/arm64/boot/dts/amlogic/mesongxm.dtsi
+@@ -831,7 +831,33 @@
+ 		map_1: map_1{
+ 			mapname = "amlogic-remote-2";
+ 			customcode = <0xfe01>;
+-			size  = <53>;
++			size  = <31>;
++			keymap = <REMOTE_KEY(0x4e, KEY_1)
++				REMOTE_KEY(0x0d, KEY_2)
++				REMOTE_KEY(0x0c, KEY_3)
++				REMOTE_KEY(0x4a, KEY_4)
++				REMOTE_KEY(0x09, KEY_5)
++				REMOTE_KEY(0x08, KEY_6)
++				REMOTE_KEY(0x46, KEY_7)
++				REMOTE_KEY(0x05, KEY_8)
++				REMOTE_KEY(0x04, KEY_9)
++				REMOTE_KEY(0x01, KEY_0)
++				REMOTE_KEY(0x4c, KEY_MENU)
++				REMOTE_KEY(0x11, KEY_HOME)
++				REMOTE_KEY(0x50, KEY_RIGHT)
++				REMOTE_KEY(0x51, KEY_LEFT)
++				REMOTE_KEY(0x16, KEY_UP)
++				REMOTE_KEY(0x1a, KEY_DOWN)
++				REMOTE_KEY(0x13, KEY_ENTER)
++				REMOTE_KEY(0x41, KEY_MUTE)
++				REMOTE_KEY(0x43, KEY_BACK)
++				REMOTE_KEY(0x40, KEY_POWER)
++				REMOTE_KEY(0x59, KEY_PREVIOUSSONG)
++				REMOTE_KEY(0x58, KEY_NEXTSONG)
++				REMOTE_KEY(0x55, KEY_REWIND)
++				REMOTE_KEY(0x54, KEY_FASTFORWARD)
++				REMOTE_KEY(0x5a, KEY_PLAYPAUSE)>;
++/*
+ 			keymap = <REMOTE_KEY(0x01, KEY_1)
+ 				REMOTE_KEY(0x02, KEY_2)
+ 				REMOTE_KEY(0x03, KEY_3)
+@@ -885,6 +911,7 @@
+ 				REMOTE_KEY(0x0b, KEY_QUESTION)
+ 				REMOTE_KEY(0x00, KEY_CHAT)
+ 				REMOTE_KEY(0x13, KEY_SEARCH)>;
++*/
+ 		};
+ 		map_2: map_2{
+ 			mapname = "amlogic-remote-3";
+diff --git a/drivers/amlogic/input/remote/Makefile b/drivers/amlogic/input/remote/Makefile
+index 460a29b..7bfe7d5 100644
+--- a/drivers/amlogic/input/remote/Makefile
++++ b/drivers/amlogic/input/remote/Makefile
+@@ -5,6 +5,6 @@
+ # Each configuration option enables a list of files.
+ 
+ obj-$(CONFIG_MESON_REMOTE)		+= remote.o
+-#remote-objs := remote_main.o remote_func.o
++remote-objs := remote_main.o remote_func.o
+ 
+-remote-objs := remote_core.o remote_meson.o sysfs.o remote_raw.o remote_decoder_xmp.o remote_regmap.o
++#remote-objs := remote_core.o remote_meson.o sysfs.o remote_raw.o remote_decoder_xmp.o remote_regmap.o
+diff --git a/drivers/amlogic/input/remote/remote_core.c b/drivers/amlogic/input/remote/remote_core.c
+index af25e9d..069fd5c 100644
+--- a/drivers/amlogic/input/remote/remote_core.c
++++ b/drivers/amlogic/input/remote/remote_core.c
+@@ -44,7 +44,7 @@
+ #include "remote_core.h"
+ 
+ int remote_debug_level = 3;
+-bool remote_debug_enable = 0;
++bool remote_debug_enable = 1;
+ 
+ int remote_printk(int level, const char *fmt, ...)
+ {
+diff --git a/lib/mpi/mpi-internal.h b/lib/mpi/mpi-internal.h
+index 60cf765..2773706 100644
+--- a/lib/mpi/mpi-internal.h
++++ b/lib/mpi/mpi-internal.h
+@@ -250,8 +250,8 @@ typedef long SItype;
+ typedef unsigned long USItype;
+ #endif
+ 
+-#ifdef __GNUC__
+-#include "mpi-inline.h"
+-#endif
++//#ifdef __GNUC__
++//#include "mpi-inline.h"
++//#endif
+ 
+ #endif /*G10_MPI_INTERNAL_H */
+diff --git a/lib/mpi/mpih-mul.c b/lib/mpi/mpih-mul.c
+index 7c84171..c7f9d78 100644
+--- a/lib/mpi/mpih-mul.c
++++ b/lib/mpi/mpih-mul.c
+@@ -64,6 +64,96 @@
+  * algorithm below.
+  */
+ 
++#ifndef G10_MPI_INLINE_DECL
++#define G10_MPI_INLINE_DECL  extern inline
++#endif
++
++G10_MPI_INLINE_DECL mpi_limb_t
++mpihelp_add_1(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
++          mpi_size_t s1_size, mpi_limb_t s2_limb) 
++{
++    mpi_limb_t x;
++
++    x = *s1_ptr++;
++    s2_limb += x;
++    *res_ptr++ = s2_limb;
++    if (s2_limb < x) {  /* sum is less than the left operand: handle carry */
++        while (--s1_size) {
++            x = *s1_ptr++ + 1;  /* add carry */
++            *res_ptr++ = x; /* and store */
++            if (x)  /* not 0 (no overflow): we can stop */
++                goto leave;
++        }
++        return 1;   /* return carry (size of s1 to small) */
++    }
++
++leave:
++    if (res_ptr != s1_ptr) {    /* not the same variable */
++        mpi_size_t i;   /* copy the rest */
++        for (i = 0; i < s1_size - 1; i++)
++            res_ptr[i] = s1_ptr[i];
++    }
++    return 0;       /* no carry */
++}
++
++G10_MPI_INLINE_DECL mpi_limb_t
++mpihelp_add(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr, mpi_size_t s1_size,
++        mpi_ptr_t s2_ptr, mpi_size_t s2_size)
++{
++    mpi_limb_t cy = 0;
++
++    if (s2_size)
++        cy = mpihelp_add_n(res_ptr, s1_ptr, s2_ptr, s2_size);
++
++    if (s1_size - s2_size)
++        cy = mpihelp_add_1(res_ptr + s2_size, s1_ptr + s2_size,
++                   s1_size - s2_size, cy);
++    return cy;
++}
++
++G10_MPI_INLINE_DECL mpi_limb_t
++mpihelp_sub_1(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr,
++          mpi_size_t s1_size, mpi_limb_t s2_limb)
++{
++    mpi_limb_t x;
++
++    x = *s1_ptr++;
++    s2_limb = x - s2_limb;
++    *res_ptr++ = s2_limb;
++    if (s2_limb > x) {
++        while (--s1_size) {
++            x = *s1_ptr++;
++            *res_ptr++ = x - 1;
++            if (x)
++                goto leave;
++        }
++        return 1;
++    }
++
++leave:
++    if (res_ptr != s1_ptr) {
++        mpi_size_t i;
++        for (i = 0; i < s1_size - 1; i++)
++            res_ptr[i] = s1_ptr[i];
++    }
++    return 0;
++}
++
++G10_MPI_INLINE_DECL mpi_limb_t
++mpihelp_sub(mpi_ptr_t res_ptr, mpi_ptr_t s1_ptr, mpi_size_t s1_size,
++        mpi_ptr_t s2_ptr, mpi_size_t s2_size)
++{
++    mpi_limb_t cy = 0;
++
++    if (s2_size)
++        cy = mpihelp_sub_n(res_ptr, s1_ptr, s2_ptr, s2_size);
++
++    if (s1_size - s2_size)
++        cy = mpihelp_sub_1(res_ptr + s2_size, s1_ptr + s2_size,
++                   s1_size - s2_size, cy);
++    return cy;
++}
++
+ static mpi_limb_t
+ mul_n_basecase(mpi_ptr_t prodp, mpi_ptr_t up, mpi_ptr_t vp, mpi_size_t size)
+ {

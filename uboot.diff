@@ -1,0 +1,42 @@
+diff --git a/Makefile b/Makefile
+index 8b60113..8aca502 100644
+--- a/Makefile
++++ b/Makefile
+@@ -246,7 +246,8 @@ ifeq ($(HOSTARCH),$(ARCH))
+ CROSS_COMPILE ?=
+ endif
+ 
+-export CROSS_COMPILE=/opt/gcc-linaro-aarch64-none-elf-4.8-2013.11_linux/bin/aarch64-none-elf-
++#export CROSS_COMPILE=/opt/gcc-linaro-aarch64-none-elf-4.8-2013.11_linux/bin/aarch64-none-elf-
++export CROSS_COMPILE=/opt/aarch64-none-elf-4.9/bin/aarch64-none-elf-
+ 
+ KCONFIG_CONFIG	?= .config
+ export KCONFIG_CONFIG
+diff --git a/board/amlogic/configs/gxl_p212_v1.h b/board/amlogic/configs/gxl_p212_v1.h
+index b2d66cb..c3d6b00 100644
+--- a/board/amlogic/configs/gxl_p212_v1.h
++++ b/board/amlogic/configs/gxl_p212_v1.h
+@@ -109,13 +109,13 @@
+         "sdc_burning=sdc_burn ${sdcburncfg}\0"\
+         "wipe_data=successful\0"\
+         "wipe_cache=successful\0"\
+-        "EnableSelinux=enforcing\0"\
++        "EnableSelinux=permissive\0"\
+         "recovery_part=recovery\0"\
+         "recovery_offset=0\0"\
+         "cvbs_drv=0\0"\
+         "active_slot=_a\0"\
+         "initargs="\
+-            "rootfstype=ramfs init=/init console=ttyS0,115200 no_console_suspend earlyprintk=aml-uart,0xc81004c0 ramoops.pstore_en=1 ramoops.record_size=0x8000 ramoops.console_size=0x4000 "\
++            "rootfstype=ramfs init=/init console=ttyS0,115200 androidboot.console=ttyS0 no_console_suspend earlyprintk=aml-uart,0xc81004c0 ramoops.pstore_en=1 ramoops.record_size=0x8000 ramoops.console_size=0x4000 "\
+             "\0"\
+         "upgrade_check="\
+             "echo upgrade_step=${upgrade_step}; "\
+@@ -226,6 +226,7 @@
+                 "echo detect upgrade key; sleep 3;"\
+                 "if gpio input GPIOAO_2; then run update; fi;"\
+             "fi;"\
++            "run usb_burning; "\
+             "\0"\
+ 
+ #define CONFIG_PREBOOT  \

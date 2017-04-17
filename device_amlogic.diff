@@ -1,0 +1,446 @@
+diff --git a/p212/BoardConfig.mk b/p212/BoardConfig.mk
+index 057b075..0c29f76 100644
+--- a/p212/BoardConfig.mk
++++ b/p212/BoardConfig.mk
+@@ -60,7 +60,7 @@ BOARD_HAVE_FLASHLIGHT := false
+ BOARD_HAVE_HW_JPEGENC := true
+ 
+ TARGET_USERIMAGES_USE_EXT4 := true
+-BOARD_SYSTEMIMAGE_PARTITION_SIZE := 2147483648
++BOARD_SYSTEMIMAGE_PARTITION_SIZE := 1610612736
+ BOARD_USERDATAIMAGE_PARTITION_SIZE := 576716800
+ BOARD_CACHEIMAGE_PARTITION_SIZE := 69206016
+ BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
+diff --git a/p212/device.mk b/p212/device.mk
+old mode 100644
+new mode 100755
+index a0b26c9..12ac8e0
+--- a/p212/device.mk
++++ b/p212/device.mk
+@@ -58,4 +58,42 @@ $(call inherit-product, frameworks/native/build/tablet-10in-xhdpi-2048-dalvik-he
+ 
+ # set default USB configuration
+ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+-    persist.sys.usb.config=mtp
++    persist.sys.usb.config=mtp,adb
++
++
++#########################################################
++# Copy proprietary so
++#########################################################
++#define all-so-files-under
++#$(patsubst ./%,%, \
++#    $(shell cd $(LOCAL_PATH)/preinstall/$(1) ; \
++#      find ./ -maxdepth 1  -name "*.so" -and -not -name ".*") \
++# )
++#endef
++
++#COPY_LIB_TARGET := $(call all-so-files-under,lib)
++#PRODUCT_COPY_FILES += $(foreach soName, $(COPY_LIB_TARGET), \
++#$(addprefix $(LOCAL_PATH)/preinstall/lib/, $(soName)):$(addprefix system/fake-libs/, $(soName)))
++
++
++
++#########################################################
++# Copy proprietary apk to system/usr/app
++#########################################################
++define all-data-files-under
++$(patsubst ./%,%, \
++  $(shell cd $(LOCAL_PATH)/preinstall/$(1) ; \
++          find ./ -maxdepth 1  -name "*.apk" -and -not -name ".*") \
++ )
++endef
++
++COPY_APK_TARGET := $(call all-data-files-under,apk)
++PRODUCT_COPY_FILES += $(foreach apkName, $(COPY_APK_TARGET), \
++$(addprefix $(LOCAL_PATH)/preinstall/apk/, $(apkName)):$(addprefix system/usr/app/, $(apkName)))
++
++
++#########################################################
++# Copy install-app.sh to system/bin/
++#########################################################
++PRODUCT_COPY_FILES += \
++device/amlogic/$(TARGET_PRODUCT)/preinstall/install-app.sh:system/bin/install-app.sh
+diff --git a/p212/files/Vendor_0001_Product_0001.kl b/p212/files/Vendor_0001_Product_0001.kl
+index affdbcc..92d1aa4 100644
+--- a/p212/files/Vendor_0001_Product_0001.kl
++++ b/p212/files/Vendor_0001_Product_0001.kl
+@@ -76,16 +76,6 @@ key 52    PERIOD
+ key 53    SLASH
+ key 28    ENTER
+ 
+-key 75		F3
+-key 76		F4
+-key 77		F5
+-key 64		F6
+-key 65		F7
+-key 66		F8
+-key 67		F9
+-key 68		F10
+-key 69		F11
+-
+ key 56    ALT_LEFT
+ key 100   ALT_RIGHT
+ key 42    SHIFT_LEFT
+@@ -97,7 +87,7 @@ key 155   ENVELOPE
+ 
+ key 12    MINUS
+ key 13    EQUALS
+-key 215   AT
++#key 215   AT
+ key 119   MEDIA_PLAY_PAUSE
+ key 122   MEDIA_PREVIOUS
+ key 123   MEDIA_NEXT
+@@ -107,10 +97,23 @@ key 116   POWER
+ #key 116   POWER	WAKE
+ key 113   VOLUME_MUTE
+ key 128   MEDIA_STOP
++key 124   MEDIA_PAUSE
+ key 130   ZOOM_IN
+ key 131   ZOOM_OUT
+-#key 133   NETFLIX
++key 133   TAB
++key 255   F5
++key 233   F7
+ key 140   F10
++key 111   MUSIC
++key 112	  AT
++key 101   F3
++
++#key 129   F4
++key	 66	  F1
++key	 77	  F2
++key  88	  F9
++key  99   F6
++key  266  F8
+ #key 132   TV_REPEAT
+ #key 134   TV_SHORTCUTKEY_DISPAYMODE
+ #key 135   TV_SUBTITLE
+diff --git a/p212/files/remote.conf b/p212/files/remote.conf
+index a558563..d02fbb7 100644
+--- a/p212/files/remote.conf
++++ b/p212/files/remote.conf
+@@ -1,172 +1,101 @@
+ #*********************************************************************************************************
+ #this file is configuration for each factory remote device
+-# 	work_mode	  0 :software mode  1 :hardware mode
+-#	repeat_enable	  0 :disable repeat 1 :enable repeat
++# 	work_mode	  0 :software mode  1 :hardware mode 
++#	repeat_enable	  0 :disable repeat 1 :enable repeat	
+ #
+-#	factory_code      each device has it's unique factory code.
++#	factory_code      each device has it's unique factory code. 
+ #			  pattern:custom_code(16bit)+index_code(16bit)
+ #			  examble: 0xff000001 = 0xff00(custom cod)  0001 (index)
+ #
+ #	release_delay	  unit:ms.release will report from kernel to user layer after this period of time
+-#			  from press or repeat triggered.
++#			  from press or repeat triggered. 
+ #
+ #	debug_enable      0 :debug disable  1 :debug disable
+ #
+ # SW MODE:
+-#	bit_count	  how many bits in each frame
+-#	tw_leader_act	  time window for leader active
++#	bit_count	  how many bits in each frame	  
++#	tw_leader_act	  time window for leader active 
+ #	tw_bit0		  time window for bit0 time.
+ #	tw_bit1		  time window for bit1 time
+ #	tw_repeat_leader  time window for repeat leader
+ # REG
+-#	reg_base_gen	  set value for PREG_IR_DEC_BASE_GEN
++#	reg_base_gen	  set value for PREG_IR_DEC_BASE_GEN	
+ #	reg_control	  set value for PREG_IR_DEC_CONTROL
+ #	reg_leader_act	  set value for PREG_IR_DEC_LEADER_ACTIVE
+ #	reg_leader_idle	  set value for PREG_IR_DEC_LEADER_IDLE
+ #	reg_repeat_leader set value for PREG_IR_DEC_REPEAT_IDLE
+ #	reg_bit0_time	  set value for PREG_IR_DEC_BIT0_TIME
+-#*************************************************************************************************************
++#************************************************************************************************************* 
+ #amlogic NEC remote
++factory_code	= 0xfe010000 
+ work_mode  		= 0
+ repeat_enable = 1
+-repeat_delay = 130
+-repeat_peroid = 120
+-release_delay   =       20
++repeat_delay = 40
++repeat_peroid = 39
++release_delay	=	121
+ debug_enable 	= 1
+ 
+-fn_key_scancode    = 0x15
+-left_key_scancode  = 0x1c
+-right_key_scancode = 0x48
+-up_key_scancode    = 0x44
+-down_key_scancode  = 0x1d
+-ok_key_scancode    = 0x5c
+-pageup_key_scancode = 0x04
+-pagedown_key_scancode = 0x1b
++fn_key_scancode    = 0x00
++left_key_scancode  = 0x51
++right_key_scancode = 0x50
++up_key_scancode    = 0x16
++down_key_scancode  = 0x1a
++ok_key_scancode    = 0x13
+ 
+-custom_begin
+-		factory_infcode = 0
+-		factory_code	= 0xfb040001
+-
+-		mouse_begin
+-				0 0x1c
+-				1 0x48
+-				2 0x44
+-				3 0x1d
+-		mouse_end
+-		key_begin
+-				0x47 11
+-				0x13 2
+-				0x10 3
+-				0x11 4
+-				0x0F 5
+-				0x0C 6
+-				0x0D 7
+-				0x0B 8
+-				0x08 9
+-				0x09 10
+-				0x5C 97
+-				0x51 65
+-				0x49 14
+-				0x06 130
+-				0x14 131
+-				0x44 103
+-				0x1D 108
+-				0x1C 105
+-				0x48 106
+-				0x53 125
+-				0x45 104
+-				0x19 109
+-				0x16 102
+-				0x52 119
+-				0x05 122
+-				0x59 123
+-				0x1b 120
+-				0x04 121
+-				0x1A 116
+-				0x0A 15
+-				0x0e 113
+-				0x15 63
+-				0x1F 102
+-				0x1e 132
+-				0x07 133
+-				0x12 134
+-				0x54 135
+-				0x02 136
+-				0x4f 30
+-				0x42 48
+-				0x5d 46
+-				0x4c 32
+-				0x58 137
+-				0x55 140
+-		key_end
+-		repeat_key_begin
+-				0x47 11
+-				0x13 2
+-				0x10 3
+-				0x11 4
+-				0x0F 5
+-				0x0C 6
+-				0x0D 7
+-				0x0B 8
+-				0x08 9
+-				0x09 10
+-				0x5C 97
+-				0x51 65
+-				0x49 14
+-				0x06 130
+-				0x14 131
+-				0x44 103
+-				0x1D 108
+-				0x1C 105
+-				0x48 106
+-				0x53 125
+-				0x45 104
+-				0x19 109
+-				0x16 102
+-				0x52 119
+-				0x05 122
+-				0x59 123
+-				0x1b 120
+-				0x04 121
+-				0x1A 116
+-				0x0A 15
+-				0x0e 113
+-				0x15 63
+-				0x1F 102
+-				0x1e 132
+-				0x07 133
+-				0x12 134
+-				0x54 135
+-				0x02 136
+-				0x4f 30
+-				0x42 48
+-				0x5d 46
+-				0x4c 32
+-				0x58 137
+-				0x55 140
+-		repeat_key_end
+-custom_end
+-
+-custom_begin
+-		factory_infcode = 1
+-		factory_code	= 0xbd020001
+-		key_begin
+-				0xca 103
+-				0xd2 108
+-				0x99 105
+-				0xc1 106
+-				0xce 97
+-				0x45 116
+-				0xc5 133
+-				0x80 113
+-				0xd0 15
+-				0xd6 125
+-				0x95 102
+-				0xdd 104
+-				0x8c 109
+-				0x89 131
+-				0x9c 130
+-				0x9a 120
+-				0xcd 121
+-		key_end
+-custom_end
++mouse_begin
++		0 0x51 //mouse key left
++		1 0x50 //mouse key right
++		2 0x16 //mouse key up
++		3 0x1a //mouse key down
++mouse_end
++key_begin
++		0x11 102 #HOME
++		0x19 158 #EXIT
++		0x4c 125 #MENU
++		0x40 116 #ON/OFF
++		0x18 115 #VOL+
++		0x10 114 #VOL-
++		0x16 103 #UP
++		0x51 105 #LEFT
++		0x13 97  #DPAD_CENTER
++		0x50 106 #RIGHT
++		0x1a 108 #DOWN
++		0x41 113 #MUTE
++	  	0x5a 119 #PLAY_PAUSE
++		0x52 124 #MEDIA_PAUSE 
++		0x0a 257 #MUSIC
++#	  	0x49 261 #PICTURE PLAYER
++	  	0x4d 263 #SHORTCUT_VIDEOPLAYER
++#	  	0x48 262 #SHORTCUT_FILEBROWSER
++	  	0x03 217 #SEARCH
++	  	0x0e 70  #267->WEBSITE	  #70-->EXPLORE
++	  	0x43 255 #SETTINGS
++	  	0x54 120 #FAST_FORWARD
++	  	0x55 121 #REWIND
++	  	0x59 122 #PREV
++	  	0x58 123 #NEXT
++	  	0x4e 2   #1
++	  	0x0d 3   #2
++	  	0x0c 4   #3
++	  	0x4a 5   #4
++	  	0x09 6   #5
++	  	0x08 7   #6
++	  	0x46 8   #7
++	  	0x05 9   #8
++	  	0x04 10  #9
++	  	0x01 11  #0
++	  	0x42 14  #DEL
++#	  	0x52 128 #MEDIA_STOP
++#	  	0x45 264 #ONEKEY_ZOOM
++	  	0x06 265 #SHORTCUT_SUBTITLE
++	  	0x44 266 #KODI 
++	  	0x0f  233 #MAIN_MENU
++#	  	0x12 269  # F9
++		0x47 112  #@ AT
++        0x0a 111 #MUSIC
++		0x4d 101 # (F3)VIDEO
++		0x49 66  #(F1)PHOTO
++		0x48 77	#(F2)FILE
++		0x12 88   #(F9)CLEAN
++		0x45 99  #(F6)ZOOM
++key_end
+diff --git a/p212/init.amlogic.board.rc b/p212/init.amlogic.board.rc
+old mode 100644
+new mode 100755
+index dac2c09..5c7fb49
+--- a/p212/init.amlogic.board.rc
++++ b/p212/init.amlogic.board.rc
+@@ -15,6 +15,7 @@ on post-fs-data
+     insmod /system/lib/mali.ko mali_debug_level=2 mali_shared_mem_size=0x40000000
+ 
+ on boot
++    install-app.sh
+     setprop ro.radio.noril true
+     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
+     write /sys/class/freq_limit/limit 0
+@@ -38,8 +39,14 @@ on fs
+ on post-fs-data
+    mkdir  /data/tee
+ 
++
+ service tee_supplicant /system/bin/tee-supplicant
+ 		class main
+ 		oneshot
+ 		seclabel u:r:tee:s0
+ 
++service install_app /system/bin/install-app.sh
++    class main
++    user root
++    group root
++    oneshot
+diff --git a/p212/mkern.sh b/p212/mkern.sh
+index 3a129fc..091517a 100644
+--- a/p212/mkern.sh
++++ b/p212/mkern.sh
+@@ -11,7 +11,7 @@ if [ "$ROOTFS" == "" -o ! -f "$ROOTFS" ]; then
+     exit 1
+ fi
+ 
+-KERNEL_OUT=out/target/product/212/obj/KERNEL_OBJ
++KERNEL_OUT=out/target/product/p212/obj/KERNEL_OBJ
+ #mkdir -p $KERNEL_OUT
+ 
+ if [ ! -f $KERNEL_OUT/.config ]; then
+diff --git a/p212/system.prop b/p212/system.prop
+old mode 100644
+new mode 100755
+index 2a2d02c..75895ce
+--- a/p212/system.prop
++++ b/p212/system.prop
+@@ -169,3 +169,5 @@ ubootenv.var.hdmimode=
+ ubootenv.var.is.bestmode=
+ ubootenv.var.disp.fromleft=
+ ubootenv.var.edid.crcvalue=
++persist.sys.first_run=1
++ro.debuggable=1
+diff --git a/p212/upgrade/aml_upgrade_package.conf b/p212/upgrade/aml_upgrade_package.conf
+index 3af0afb..d489045 100644
+--- a/p212/upgrade/aml_upgrade_package.conf
++++ b/p212/upgrade/aml_upgrade_package.conf
+@@ -14,7 +14,7 @@ file="manifest.xml"                     main_type="xml"             sub_type="ma
+ #partition images needed verify
+ 
+ #if you want download userdata image, uncomment below line
+-#file="userdata.img"     main_type="PARTITION"      sub_type="data"
++file="userdata.img"     main_type="PARTITION"      sub_type="data"
+ 
+ file="logo.img"         main_type="PARTITION"      sub_type="logo"
+ file="boot.img"         main_type="PARTITION"      sub_type="boot"
+diff --git a/p212/upgrade/u-boot.bin.sd.bin b/p212/upgrade/u-boot.bin.sd.bin
+index 3273631..9c14acb 100755
+Binary files a/p212/upgrade/u-boot.bin.sd.bin and b/p212/upgrade/u-boot.bin.sd.bin differ
+diff --git a/p212/upgrade/u-boot.bin.usb.bl2 b/p212/upgrade/u-boot.bin.usb.bl2
+index 5461441..180dfed 100755
+Binary files a/p212/upgrade/u-boot.bin.usb.bl2 and b/p212/upgrade/u-boot.bin.usb.bl2 differ
+diff --git a/p212/upgrade/u-boot.bin.usb.tpl b/p212/upgrade/u-boot.bin.usb.tpl
+index a9ee1e2..e06ebf2 100755
+Binary files a/p212/upgrade/u-boot.bin.usb.tpl and b/p212/upgrade/u-boot.bin.usb.tpl differ
